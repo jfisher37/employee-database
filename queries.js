@@ -1,14 +1,12 @@
-// GIVEN a command-line application that accepts user input
-// WHEN I start the application
-// THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-    //create an init function that prompts with the above options
+const db = require('./db/connections');
 
-    //Create a query file with the queries 
-
-// WHEN I choose to view all departments
-// THEN I am presented with a formatted table showing department names and department ids
-
-    //add a select all for departments and console.table it
+ //add a select all for departments and console.table it
+ 
+ function allDepts() {
+     db.query('SELECT * FROM department', function (err, results) {
+    console.table(results);
+  });
+};
 
 // WHEN I choose to view all roles
 // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
@@ -40,4 +38,4 @@
 
     //Create an update query
 
-    //create a "would you like to do anything else" prompt. 
+    
