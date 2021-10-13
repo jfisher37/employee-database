@@ -28,22 +28,7 @@ const deptQ = {
     name: 'deptQ',
 };
 
-const roleQs = [
-    {
-        type: `input`,
-        message: `What would you like to call the new role?`,
-        name: `roleTitle`,
-    },
-    {
-        type: `input`,
-        message: `Please enter the salary of this role (without commas or dollar signs).`,
-        name: `roleSalary`,
-    },
-    {
-        type: `input`,
-        message: `Please enter the associated department id for this role.`,
-        name: `deptId`,
-    }];
+
 
 
 function doAgain() {
@@ -122,6 +107,23 @@ async function addDept() {
 };
 
 async function addRole() {
+    const roleQs = [
+        {
+            type: `input`,
+            message: `What would you like to call the new role?`,
+            name: `roleTitle`,
+        },
+        {
+            type: `input`,
+            message: `Please enter the salary of this role (without commas or dollar signs).`,
+            name: `roleSalary`,
+        },
+        {
+            type: `list`,
+            message: `Please select the associated department for this role.`,
+            name: `deptName`,
+            choices: deptNames,
+        }];
     let title;
     let salary;
     let department_id;
@@ -130,7 +132,9 @@ async function addRole() {
         .then((response) => {
             title = response.roleTitle;
             salary = response.roleSalary;
-            department_id = response.deptId;
+            for(let i = 0; i < departmentList.length; i++){
+                if (response.deptName === departmentList[i].name)
+            department_id = departmentList[i].id;}
         });
     await queries.addRole(title, salary, department_id);
     await updateRoleList();
