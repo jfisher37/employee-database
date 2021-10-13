@@ -1,6 +1,13 @@
 const inquirer = require('inquirer');
 const queries = require('./queries');
 
+let departmentList = [];
+let deptNames = [];
+let roleList = [];
+let roleTitles = [];
+let employeeList = [];
+let employeeNames = [];
+
 const firstQ = {
     type: 'list',
     message: 'What would you like to do?',
@@ -15,26 +22,147 @@ const againQ = {
     choices: ['Yes', 'No'],
 };
 
+const deptQ = {
+    type: 'input',
+    message: 'What would you like to call the new department?',
+    name: 'deptQ',
+};
+
+const roleQs = [
+    {
+        type: `input`,
+        message: `What would you like to call the new role?`,
+        name: `roleTitle`,
+    },
+    {
+        type: `input`,
+        message: `Please enter the salary of this role (without commas or dollar signs).`,
+        name: `roleSalary`,
+    },
+    {
+        type: `input`,
+        message: `Please enter the associated department id for this role.`,
+        name: `deptId`,
+    }];
+
+
 function doAgain() {
     inquirer
         .prompt(againQ)
         .then((response) => {
             if (response.againQ === 'Yes') {
-           init(); }
-           else{
-               console.info ("See you next time!")
-               return
-           }
+                init();
+            }
+            else {
+                console.info("See you next time!")
+                return
+            }
         })
 };
+
+async function updateDeptList(){
+    const depts = await queries.retDepts();
+    departmentList = [];
+    deptNames = [];
+    for (let i = 0; i < depts.length; i++) {
+        departmentList.push({ id: depts[i].id, name: depts[i].name });
+        deptNames.push(depts[i].name);
+    };
+    console.log(departmentList);
+    console.log(deptNames);
+}
+
+async function updateRoleList(){
+    const roles = await queries.retRoles();
+    roleList = [];
+    roleTitles = [];
+    for (let i = 0; i < roles.length; i++) {
+        roleList.push({ id: roles[i].id, title: roles[i].title, salary: roles[i].salary, department_id: roles[i].department_id });
+        roleTitles.push(roles[i].title);
+    };
+    console.log(roleList);
+    console.log(roleTitles);
+}
+
+async function updateEmployeeList(){
+    const employees = await queries.retEmployees();
+    employeeList = [];
+    employeeNames = [];
+    for (let i = 0; i < employees.length; i++) {
+        employeeList.push({ id: employees[i].id, first_name: employees[i].first_name, last_name: employees[i].last_name, role_id: employees[i].role_id, manager_id: employees[i].manager_id });
+        employeeNames.push(`${employees[i].first_name} ${employees[i].last_name}`)
+    };
+    console.log(employeeList);
+    console.log(employeeNames);
+}
 
 async function allDepts() {
     await queries.allDepts();
     doAgain();
+};
+
+async function allRoles() {
+    await queries.allRoles();
+    doAgain();
+};
+
+async function allEmployees() {
+    await queries.allEmployees();
+    doAgain();
+};
+
+async function addDept() {
+    let name;
+    await inquirer
+        .prompt(deptQ)
+        .then((response) => name = response.deptQ);
+    await queries.addDept(name);
+    await updateDeptList();
+    doAgain();
+};
+
+async function addRole() {
+    let title;
+    let salary;
+    let department_id;
+    await inquirer
+        .prompt(roleQs)
+        .then((response) => {
+            title = response.roleTitle;
+            salary = response.roleSalary;
+            department_id = response.deptId;
+        });
+    await queries.addRole(title, salary, department_id);
+    await updateRoleList();
+    doAgain();
+};
+
+async function addEmployee() {
+    let title;
+    let salary;
+    let department_id;
+    await inquirer
+        .prompt(roleQs)
+        .then((response) => {
+            title = response.roleTitle;
+            salary = response.roleSalary;
+            department_id = response.deptId;
+        });
+    await queries.addRole(title, salary, department_id);
+    await updateEmployeeList();
+    doAgain();
+};
+
+
+function seed() {
+   updateDeptList();
+   updateRoleList();
+   updateEmployeeList();
 }
 
-function init() {
-    inquirer
+async function init() {
+    await seed();
+    await inquirer
         .prompt(firstQ)
         .then((response) => {
             switch (response.firstQ) {
@@ -42,19 +170,19 @@ function init() {
                     allDepts();
                     break;
                 case 'View All Roles':
-                    console.log('yupR');
+                    allRoles();
                     break;
                 case 'View All Employees':
-                    console.log('yupE');
+                    allEmployees();
                     break;
                 case 'Add a Department':
-                    console.log('yupAD');
+                    addDept();
                     break;
                 case 'Add a Role':
-                    console.log('yupAR');
+                    addRole();
                     break;
                 case 'Add an Employee':
-                    console.log('yupAE');
+                    addEmployee();
                     break;
                 case 'Update an Employee Role':
                     console.log('yupUER');
