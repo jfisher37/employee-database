@@ -1,12 +1,13 @@
 const db = require('./db/connections');
 
  //add a select all for departments and console.table it
- 
- function allDepts() {
+const queries = { 
+    allDepts: function () {
      db.query('SELECT * FROM department', function (err, results) {
     console.table(results);
-  });
-};
+  })
+}
+
 
 // WHEN I choose to view all roles
 // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
@@ -38,4 +39,5 @@ const db = require('./db/connections');
 
     //Create an update query
 
-    
+}   
+module.exports = queries
