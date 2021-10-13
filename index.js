@@ -45,7 +45,7 @@ function doAgain() {
         })
 };
 
-async function updateDeptList(){
+async function updateDeptList() {
     const depts = await queries.retDepts();
     departmentList = [];
     deptNames = [];
@@ -57,7 +57,7 @@ async function updateDeptList(){
     console.log(deptNames);
 }
 
-async function updateRoleList(){
+async function updateRoleList() {
     const roles = await queries.retRoles();
     roleList = [];
     roleTitles = [];
@@ -69,7 +69,7 @@ async function updateRoleList(){
     console.log(roleTitles);
 }
 
-async function updateEmployeeList(){
+async function updateEmployeeList() {
     const employees = await queries.retEmployees();
     employeeList = [];
     employeeNames = [];
@@ -132,9 +132,11 @@ async function addRole() {
         .then((response) => {
             title = response.roleTitle;
             salary = response.roleSalary;
-            for(let i = 0; i < departmentList.length; i++){
-                if (response.deptName === departmentList[i].name){
-            department_id = departmentList[i].id}}
+            for (let i = 0; i < departmentList.length; i++) {
+                if (response.deptName === departmentList[i].name) {
+                    department_id = departmentList[i].id
+                }
+            }
         });
     await queries.addRole(title, salary, department_id);
     await updateRoleList();
@@ -174,27 +176,65 @@ async function addEmployee() {
         .then((response) => {
             first_name = response.firstName.trim();
             last_name = response.lastName.trim();
-            for(let i = 0; i < roleList.length; i++){
-                if (response.role === roleList[i].title){
-            role_id = roleList[i].id}}
-            for(let i = 0; i < employeeList.length; i++){
+            for (let i = 0; i < roleList.length; i++) {
+                if (response.role === roleList[i].title) {
+                    role_id = roleList[i].id
+                }
+            }
+            for (let i = 0; i < employeeList.length; i++) {
                 const firstAndLast = response.manager.split(" ");
-                if(firstAndLast[0] === employeeList[i].first_name && firstAndLast[1] === employeeList[i].last_name){
+                if (firstAndLast[0] === employeeList[i].first_name && firstAndLast[1] === employeeList[i].last_name) {
                     manager_id = employeeList[i].id
                 }
             }
-            
+
         });
     await queries.addEmployee(first_name, last_name, role_id, manager_id);
     await updateEmployeeList();
     doAgain();
 };
 
+async function updateEmployee() {
+    const employeeUpdateQs = [
+        {
+            type: `list`,
+            message: `Which employee would you like to update?`,
+            name: `employee`,
+            choices: employeeNames,
+        },
+        {
+            type: `list`,
+            message: `Please select this employee's new role.`,
+            name: `role`,
+            choices: roleTitles,
+        }];
+    let id;
+    let role_id;
+    await inquirer
+        .prompt(employeeUpdateQs)
+        .then((response) => {
+            for (let i = 0; i < roleList.length; i++) {
+                if (response.role === roleList[i].title) {
+                    role_id = roleList[i].id
+                }
+            }
+            for (let i = 0; i < employeeList.length; i++) {
+                const firstAndLast = response.employee.split(" ");
+                if (firstAndLast[0] === employeeList[i].first_name && firstAndLast[1] === employeeList[i].last_name) {
+                    id = employeeList[i].id
+                }
+            }
+
+        });
+    await queries.updateEmployee(id, role_id)
+    await updateEmployeeList();
+    doAgain();
+}
 
 function seed() {
-   updateDeptList();
-   updateRoleList();
-   updateEmployeeList();
+    updateDeptList();
+    updateRoleList();
+    updateEmployeeList();
 }
 
 async function init() {
@@ -222,56 +262,12 @@ async function init() {
                     addEmployee();
                     break;
                 case 'Update an Employee Role':
-                    console.log('yupUER');
+                    updateEmployee();
                     break;
                 default:
                     console.log('Not Possible');
             }
         })
 }
-
-// GIVEN a command-line application that accepts user input
-// WHEN I start the application
-// THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-//create an init function that prompts with the above options
-
-//Create a query file with the queries 
-
-// WHEN I choose to view all departments
-// THEN I am presented with a formatted table showing department names and department ids
-
-//add a select all for departments and console.table it
-
-// WHEN I choose to view all roles
-// THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-
-//add a select all for roles and console.table it
-
-// WHEN I choose to view all employees
-// THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-
-//add a select all for employees and console.table it
-
-// WHEN I choose to add a department
-// THEN I am prompted to enter the name of the department and that department is added to the database
-
-//Create an Insert into query
-
-// WHEN I choose to add a role
-// THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-
-//Create an Insert into query
-
-// WHEN I choose to add an employee
-// THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-
-//Create an Insert into query
-
-// WHEN I choose to update an employee role
-// THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
-
-//Create an update query
-
-//create a "would you like to do anything else" prompt. 
 
 init();
