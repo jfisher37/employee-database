@@ -1,11 +1,13 @@
-const db = require('./db/connections');
+const preB = require('./db/connections');
+
 
  //add a select all for departments and console.table it
 const queries = { 
-allDepts: function () {
-     db.query('SELECT * FROM department', function (err, results) {
+allDepts: async function () {
+    const db = await preB;  
+    const [results, fields] = await db.execute('SELECT * FROM department');
     console.table(results);
-  })
+  
 },
 
 
@@ -14,10 +16,10 @@ allDepts: function () {
 
     //add a select all for roles and console.table it
 
-allRoles: function () {
-    db.query('SELECT * FROM role', function (err, results) {
+allRoles: async function () {
+    const db = await preB;
+    const [results, fields] = await db.execute('SELECT * FROM role');
     console.table(results);
-    })
 },
 
 // WHEN I choose to view all employees
@@ -25,10 +27,11 @@ allRoles: function () {
 
     //add a select all for employees and console.table it
 
-allEmployees: function () {
-    db.query('SELECT * FROM employee', function (err, results) {
+allEmployees: async function () {
+    const db = await preB;
+    const [results, fields] = await db.execute('SELECT * FROM employee');
     console.table(results);
-    })
+   
 },
 
 // WHEN I choose to add a department
@@ -36,48 +39,47 @@ allEmployees: function () {
 
     //Create an Insert into query
 
-addDept: function (name) {
-    db.query('INSERT INTO department (name) VALUES (?);', name, function (err, results) {
+addDept: async function (name) {
+    const db = await preB;
+    await db.execute('INSERT INTO department (name) VALUES (?);', [name]);
     console.log("Department Added!");
-    })
 },
 
 // WHEN I choose to add a role
 // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 
     //Create an Insert into query
-addRole: function (title, salary, department_id) {
+addRole: async function (title, salary, department_id) {
+    const db = await preB;
     const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?);`;
-    db.query(sql, [title, salary, department_id],  function (err, results) {
-        if(err){console.log(err);};
-        console.log(results);
+    await db.execute(sql, [title, salary, department_id])
     console.log("Role Added!");
-    })
+    
 },
 // WHEN I choose to add an employee
 // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 
     //Create an Insert into query
-addEmployee: function (first_name, last_name, role_id, manager_id) {
+addEmployee: async function (first_name, last_name, role_id, manager_id) {
+    const db = await preB;
     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);`;
-    db.query(sql, [first_name, last_name, role_id, manager_id],  function (err, results) {
+    await db.execute(sql, [first_name, last_name, role_id, manager_id]);
     console.log("Employee Added!");
-    })
+    
 },
 // WHEN I choose to update an employee role
 // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
 
     //Create an update query
-updateEmployee: function (id, role_id) {
-    const sql = `UPDATE employee SET role_id="?" WHERE id = ?;`;
-    db.query(sql, [role_id, id],  function (err, results) {
+updateEmployee: async function (id, role_id) {
+    const db = await preB;
+    const sql = `UPDATE employee SET role_id=? WHERE id = ?;`;
+    await db.execute(sql, [role_id, id]);
     console.log("Employee Updated!");
-    })
 },
 
 }  
 
-// console.log('okay');
-queries.updateEmployee(5, 3);
+queries.updateEmployee(4, 1);
 module.exports = queries
 
