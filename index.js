@@ -133,8 +133,8 @@ async function addRole() {
             title = response.roleTitle;
             salary = response.roleSalary;
             for(let i = 0; i < departmentList.length; i++){
-                if (response.deptName === departmentList[i].name)
-            department_id = departmentList[i].id;}
+                if (response.deptName === departmentList[i].name){
+            department_id = departmentList[i].id}}
         });
     await queries.addRole(title, salary, department_id);
     await updateRoleList();
@@ -142,17 +142,50 @@ async function addRole() {
 };
 
 async function addEmployee() {
-    let title;
-    let salary;
-    let department_id;
+    const employeeQs = [
+        {
+            type: `input`,
+            message: `What's the new employee's first name?'`,
+            name: `firstName`,
+        },
+        {
+            type: `input`,
+            message: `What's the new employee's last name?`,
+            name: `lastName`,
+        },
+        {
+            type: `list`,
+            message: `Please select this employee's role.`,
+            name: `role`,
+            choices: roleTitles,
+        },
+        {
+            type: `list`,
+            message: `Please select this employee's manager.`,
+            name: `manager`,
+            choices: employeeNames,
+        }];
+    let first_name;
+    let last_name;
+    let role_id;
+    let manager_id;
     await inquirer
-        .prompt(roleQs)
+        .prompt(employeeQs)
         .then((response) => {
-            title = response.roleTitle;
-            salary = response.roleSalary;
-            department_id = response.deptId;
+            first_name = response.firstName.trim();
+            last_name = response.lastName.trim();
+            for(let i = 0; i < roleList.length; i++){
+                if (response.role === roleList[i].title){
+            role_id = roleList[i].id}}
+            for(let i = 0; i < employeeList.length; i++){
+                const firstAndLast = response.manager.split(" ");
+                if(firstAndLast[0] === employeeList[i].first_name && firstAndLast[1] === employeeList[i].last_name){
+                    manager_id = employeeList[i].id
+                }
+            }
+            
         });
-    await queries.addRole(title, salary, department_id);
+    await queries.addEmployee(first_name, last_name, role_id, manager_id);
     await updateEmployeeList();
     doAgain();
 };
