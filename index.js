@@ -53,8 +53,6 @@ async function updateDeptList() {
         departmentList.push({ id: depts[i].id, name: depts[i].name });
         deptNames.push(depts[i].name);
     };
-    console.log(departmentList);
-    console.log(deptNames);
 }
 
 async function updateRoleList() {
@@ -65,8 +63,6 @@ async function updateRoleList() {
         roleList.push({ id: roles[i].id, title: roles[i].title, salary: roles[i].salary, department_id: roles[i].department_id });
         roleTitles.push(roles[i].title);
     };
-    console.log(roleList);
-    console.log(roleTitles);
 }
 
 async function updateEmployeeList() {
@@ -77,8 +73,6 @@ async function updateEmployeeList() {
         employeeList.push({ id: employees[i].id, first_name: employees[i].first_name, last_name: employees[i].last_name, role_id: employees[i].role_id, manager_id: employees[i].manager_id });
         employeeNames.push(`${employees[i].first_name} ${employees[i].last_name}`)
     };
-    console.log(employeeList);
-    console.log(employeeNames);
 }
 
 async function allDepts() {
