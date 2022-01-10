@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Description
-This is a command-line application that works as an employee tracker. You can view and add employees, roles, and departments within your organization with it. 
+This is a command-line application that works as an employee database. You can view and add employees, roles, and departments within your organization with it. 
 
 ## Table of Contents 
 - [Installation](#installation)
